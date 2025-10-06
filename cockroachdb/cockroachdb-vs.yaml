@@ -1,0 +1,32 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: cockroachdb-vs
+  namespace: cockroach-operator-system 
+spec:
+  host: cockroachdb.example.com 
+  tls:
+    secret: cockroachdb-secret
+    redirect:
+      enable: true   #Redirect from http > https
+      code: 301
+  upstreams:
+  - name: cockroachdb
+    service: cockroachdb-public
+    port: 8080
+    tls:
+      enable: true
+    healthCheck:
+      enable: true
+      path: /_admin/v1/health
+      statusMatch: "200"
+      interval: 20s
+      jitter: 3s
+      fails: 5
+      passes: 2
+      connect-timeout: 30s
+      read-timeout: 20s
+  routes:
+  - path: /
+    action:
+      pass: cockroachdb

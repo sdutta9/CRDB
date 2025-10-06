@@ -390,10 +390,37 @@ To install NGINX Plus Ingress controller use this [official guide](https://docs.
     Add an entry in the file similar to below
 
     ```bash
-    Kind 
+    # Kind related 
     172.18.5.10 dashboard.example.com
     ```
 
+
+### Expose CockroachDB services
+
+1. Apply a self-signed cert
+
+    ```bash
+    kubectl apply -f cockroachdb-secret.yaml
+    ```
+
+1. Apply the virtual server to create the FQDN
+
+    ```bash
+    kubectl apply -f cockroachdb-vs.yaml
+    ```
+
+1. Add an entry in `/etc/hosts` file
+
+    ```bash
+    sudo vi /etc/hosts
+    ```
+
+    Add an entry in the file similar to below
+
+    ```bash
+    # Kind related
+    172.18.5.10 dashboard.example.com cockroachdb.example.com
+    ```
 
 ### [Optional] Cleanup
 

@@ -1,0 +1,10 @@
+# Any private crt and keys #
+############################
+*.crt
+*.key
+*.jwt
+
+# OS Specific #
+###############
+.DS_Store
+.vscode

@@ -1,0 +1,11 @@
+# three node (two workers) cluster config
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: crdb-3node-cluster
+nodes:
+- role: control-plane
+  image: kindest/node:v1.34.0@sha256:3229b411042d457a44ea8807e90520e4b7da8700a8617ed20f0c4cb799bebe2b
+- role: worker
+  image: kindest/node:v1.34.0@sha256:3229b411042d457a44ea8807e90520e4b7da8700a8617ed20f0c4cb799bebe2b
+- role: worker
+  image: kindest/node:v1.34.0@sha256:3229b411042d457a44ea8807e90520e4b7da8700a8617ed20f0c4cb799bebe2b

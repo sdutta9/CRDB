@@ -1,0 +1,16 @@
+apiVersion: k8s.nginx.org/v1
+kind: TransportServer
+metadata:
+  name: cockroachdb-ts
+  namespace: cockroach-operator-system
+spec:
+  listener:
+    name: tls-passthrough
+    protocol: TLS_PASSTHROUGH   # NGINX just forwards TLS
+  host: crdb.example.com  # FQDN clients will use
+  upstreams:
+  - name: cockroachdb-sql
+    service: cockroachdb-public
+    port: 26257
+  action:
+    pass: cockroachdb-sql

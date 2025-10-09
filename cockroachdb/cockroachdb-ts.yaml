@@ -1,0 +1,17 @@
+apiVersion: k8s.nginx.org/v1
+kind: TransportServer
+metadata:
+  name: cockroachdb-ts
+spec:
+  # host: cockroachdb.example.com
+  # tls:
+  #   secret: cockroachdb-secret
+  listener:
+    name: sql-listener
+    protocol: TCP
+  upstreams:
+    - name: cockroachdb
+      service: cockroachdb-public
+      port: 26257
+  action:
+    pass: cockroachdb

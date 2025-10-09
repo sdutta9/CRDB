@@ -1,0 +1,10 @@
+apiVersion: k8s.nginx.org/v1
+kind: GlobalConfiguration
+metadata:
+  name: nginx-configuration
+  namespace: nginx-ingress
+spec:
+  listeners:
+  - name: sql-listener
+    port: 26257
+    protocol: TCP

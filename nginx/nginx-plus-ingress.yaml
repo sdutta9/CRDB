@@ -112,7 +112,7 @@ spec:
          #- -log-format=glog # Sets the log format. Options include: glog, json, text
           - -enable-prometheus-metrics
          #- -enable-service-insight
-         #- -global-configuration=$(POD_NAMESPACE)/nginx-configuration
+          - -global-configuration=$(POD_NAMESPACE)/nginx-configuration
 #      initContainers:
 #      - image: nginx/nginx-ingress:5.2.0
 #        imagePullPolicy: IfNotPresent

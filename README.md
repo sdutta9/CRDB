@@ -40,127 +40,101 @@ Follow below guide(<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-local
     cd cockroachdb
     ```
 
-1. Install needed CRDs
+1. Download the `cockroachdb-statefulset.yaml` file and apply it.
 
     ```bash
-    curl -O https://raw.githubusercontent.com/cockroachdb/cockroach-operator/v2.18.2/install/crds.yaml 
-    k apply -f crds.yaml 
+    curl -O https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cockroachdb-statefulset.yaml
+    ```
+
+1. Modify the resource allocation to below for the statefulsets
+
+    ```yaml
+    resources:
+          requests:
+            cpu: "500m"
+            memory: "2Gi"
+          limits:
+            cpu: "500m"
+            memory: "2Gi"
+    ```
+
+1. Once done apply the yaml manifest to create the objects
+
+    ```bash
+    kubectl apply -f cockroachdb-statefulset.yaml
     ```
 
     ```bash
     ##Sample Output##
-    ## Ignore the warnings
-
-    ~/CRDB/cockroachdb » k apply -f crds.yaml
-
-    Warning: unrecognized format "int64"
-    Warning: unrecognized format "int32"
-    customresourcedefinition.apiextensions.k8s.io/crdbclusters.crdb.cockroachlabs.com created
+    service/cockroachdb-public created
+    Warning: spec.SessionAffinity is ignored for headless services
+    service/cockroachdb created
+    poddisruptionbudget.policy/cockroachdb-budget created
+    statefulset.apps/cockroachdb created
     ```
 
-1. Install operator
+1. Confirm that three pods are Running successfully
 
     ```bash
-    curl -O https://raw.githubusercontent.com/cockroachdb/cockroach-operator/v2.18.2/install/operator.yaml 
-    k apply -f operator.yaml
-    ```
-
-    ```bash
-    ##Sample Output##                                                                                       
-    ~/CRDB/cockroachdb » k apply -f operator.yaml
-
-    namespace/cockroach-operator-system created
-    serviceaccount/cockroach-operator-sa created
-    clusterrole.rbac.authorization.k8s.io/cockroach-operator-role created
-    clusterrolebinding.rbac.authorization.k8s.io/cockroach-operator-rolebinding created
-    service/cockroach-operator-webhook-service created
-    deployment.apps/cockroach-operator-manager created
-    mutatingwebhookconfiguration.admissionregistration.k8s.io/cockroach-operator-mutating-webhook-configuration created
-    validatingwebhookconfiguration.admissionregistration.k8s.io/cockroach-operator-validating-webhook-configuration created
-    ```
-
-1. [Optional Step] Set your current namespace to the one used by the Public operator
-
-    ```bash
-    kubectl config set-context --current --namespace=cockroach-operator-system
-    ```
-
-1. Validate that the operator is running:
-
-    ```bash
-    kubectl get pods [-n cockroach-operator-system]
+    kubectl get pods
     ```
 
     ```bash
     ##Sample Output##
-    ~/CRDB/cockroachdb » k get pods -n cockroach-operator-system
-
-    NAME                                          READY   STATUS    RESTARTS   AGE
-    cockroach-operator-manager-5cfd4f9b99-qp2xq   1/1     Running   0          6m32s
+    NAME            READY   STATUS    RESTARTS   AGE
+    cockroachdb-0   1/1     Running   0          2m12s
+    cockroachdb-1   1/1     Running   0          2m12s
+    cockroachdb-2   1/1     Running   0          2m12s
     ```
 
-1. Download example.yaml, a custom resource that tells the operator how to configure the Kubernetes cluster.
+1. Confirm that the persistent volumes and corresponding claims were created successfully for all three pods:
 
     ```bash
-    curl -O https://raw.githubusercontent.com/cockroachdb/cockroach-operator/v2.18.2/examples/example.yaml
-    ```
-
-1. Change the storage from `"60Gi"` to `"20Gi"` within the downloaded `example.yaml` file and then apply it to your cluster
-
-    ```bash
-    kubectl apply -f example.yaml [-n cockroach-operator-system]
+    kubectl get pv
     ```
 
     ```bash
     ##Sample Output##
-    crdbcluster.crdb.cockroachlabs.com/cockroachdb creted
+    NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                           STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+    pvc-055bff24-c965-47b0-aeb0-b7a44a271d09   20Gi       RWO            Delete           Bound    default/datadir-cockroachdb-2   standard       <unset>                          37h
+    pvc-998d8a5c-dfdb-488c-a68f-8bc5974fe7da   20Gi       RWO            Delete           Bound    default/datadir-cockroachdb-0   standard       <unset>                          37h
+    pvc-c4471569-0938-464d-9008-2733a20da1b1   20Gi       RWO            Delete           Bound    default/datadir-cockroachdb-1   standard       <unset>                          37h
     ```
 
-1. Check that the pods were running:
+1. Use `cluster-init.yaml` file to perform a one-time initialization that joins the CockroachDB nodes into a single cluster:
 
     ```bash
-    kubectl get pods [-n cockroach-operator-system]
+    curl -O https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cluster-init.yaml
+    ```
+
+    ```bash
+    kubectl create -f cluster-init.yaml
+    ```
+
+    ```bash
+    ##Sample Output##
+    job.batch/cluster-init created
     ```
 
 ### Use the built-in SQL client
 
-1. To use the CockroachDB SQL client, first launch a secure pod running the `cockroach` binary.
+1. Launch a temporary interactive pod and start the built-in SQL client inside it:
 
     ```bash
-    curl -O https://raw.githubusercontent.com/cockroachdb/cockroach-operator/v2.18.2/examples/client-secure-operator.yaml
-    ```
-
-    ```bash
-    kubectl apply -f client-secure-operator.yaml -n cockroach-operator-system
-    ```
-
-1. Get a shell into the CockroachDB SQL client pod:
-
-    ```bash
-    kubectl exec -it cockroachdb-client-secure -n cockroach-operator-system -- /bin/bash 
-    ```
-
-1. Start the CockroachDB built-in SQL client:
-
-    ```bash
-    ./cockroach sql --certs-dir=/cockroach/cockroach-certs --host=cockroachdb-public
+    kubectl run cockroachdb -it \
+    --image=cockroachdb/cockroach:v25.3.2 \
+    --rm \
+    --restart=Never \
+    -- sql \
+    --insecure \
+    --host=cockroachdb-public
     ```
 
     ```bash
     ##Sample Output##
-    [root@cockroachdb-client-secure cockroach]# ./cockroach sql --certs-dir=/cockroach/cockroach-certs --host=cockroachdb-public
 
-    #
-    # Welcome to the CockroachDB SQL shell.
-    # All statements must be terminated by a semicolon.
-    # To exit, type: \q.
-    #
-    # Server version: CockroachDB CCL v25.2.2 (aarch64-unknown-linux-gnu, built 2025/06/23 13:45:32, go1.23.7 X:nocoverageredesign) (same version as client)
-    # Cluster ID: 6fe0de8a-9a57-4b86-a2f7-71da42e4fd50
-    #
-    # Enter \? for a brief introduction.
-    #
-    root@cockroachdb-public:26257/defaultdb>                                                                                                                                              
+    If you don't see a command prompt, try pressing enter.
+    root@cockroachdb-public:26257/defaultdb>
     M-? toggle key help • C-d erase/stop • C-c clear/cancel • M-. hide/show prompt
     ```
 
@@ -178,101 +152,54 @@ Follow below guide(<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-local
 
     ```bash
     ##Sample Output##
-    root@cockroachdb-public:26257/defaultdb> CREATE DATABASE bank;
+    root@cockroachdb-public:26257/defaultdb>  CREATE DATABASE bank;
     CREATE DATABASE
 
-    Time: 176ms total (execution 166ms / network 10ms)
+    Time: 91ms total (execution 48ms / network 43ms)
 
-    root@cockroachdb-public:26257/defaultdb> CREATE TABLE bank.accounts (id INT PRIMARY KEY, balance DECIMAL);
+    root@cockroachdb-public:26257/defaultdb> CREATE TABLE bank.account (                                           
+                                     ->     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                                     ->       balance DECIMAL                                                                                      
+                                     ->   );
     CREATE TABLE
 
-    Time: 39ms total (execution 28ms / network 10ms)
+    Time: 37ms total (execution 17ms / network 20ms)
 
-    root@cockroachdb-public:26257/defaultdb> INSERT INTO bank.accounts VALUES (1, 1000.50);                                                         INSERT 0 1
+    root@cockroachdb-public:26257/defaultdb> INSERT INTO bank.accounts (balance)                
+                                          ->   VALUES    
+                                          ->       (1000.50), (20000), (380), (500), (55000);
+    INSERT 0 5
 
-    Time: 29ms total (execution 29ms / network 0ms)
+    Time: 9ms total (execution 9ms / network 1ms)
 
-    root@cockroachdb-public:26257/defaultdb> SELECT * FROM bank.accounts;                                                                           
-    id | balance
-    -----+----------
-    1 | 1000.50
-    (1 row)
+    root@cockroachdb-public:26257/defaultdb> SELECT * FROM bank.accounts;  
+                      id                  | balance
+   ---------------------------------------+----------
+     521ff098-4b6e-4cc1-9bcd-76b1be9944c2 |   55000
+     53947177-f320-493d-afae-ca4f61f48dc3 |   20000
+     a754afa4-f41c-4fd7-97fe-a41ca75310b2 |     500
+     b48f0c88-0415-457c-84b1-e46d4d9f675b |     380
+     c8e12305-a64e-47f9-9902-8d721c4b35c5 | 1000.50
+    (5 rows)
 
-    Time: 5ms total (execution 5ms / network 0ms)
+    Time: 16ms total (execution 11ms / network 4ms)
     ```
 
-1. Create a user with a password. You will need this username and password to access the DB Console later.
-
-    ```sql
-    CREATE USER shouvik WITH PASSWORD 'shouvik';
-    ```
-
-    ```bash
-    ##Sample Output##
-    root@cockroachdb-public:26257/defaultdb> CREATE USER shouvik WITH PASSWORD 'shouvik';
-    CREATE ROLE
-
-    Time: 99ms total (execution 98ms / network 0ms)
-    ```
-
-1. Exit the SQL shell
+1. Exit the SQL shell and delete the temporary pod:
 
     ```sql
     \q
-    ```
-
-1. Exit pod
-
-    ```bash
-    exit
     ```
 
 ### Access the DB console
 
-1. Get a shell into the CockroachDB SQL client pod:
-
-    ```bash
-    kubectl exec -it cockroachdb-client-secure -n cockroach-operator-system -- /bin/bash 
-    ```
-
-1. Start the CockroachDB built-in SQL client:
-
-    ```bash
-    ./cockroach sql --certs-dir=/cockroach/cockroach-certs --host=cockroachdb-public
-    ```
-
-1. Assign user that you created in previous section (`shouvik` in my case) to the admin role (you only need to do this once):
-
-    ```sql
-    GRANT admin TO shouvik;
-    ```
-
-    ```bash
-    root@cockroachdb-public:26257/defaultdb> GRANT admin TO shouvik;
-    GRANT
-
-    Time: 92ms total (execution 92ms / network 0ms)
-    ```
-
-1. Exit the SQL shell
-
-    ```sql
-    \q
-    ```
-
-1. Exit pod
-
-    ```bash
-    exit
-    ```
-
 1. In a new terminal window, port-forward from your local machine to the `cockroachdb-public` service:
 
     ```bash
-    kubectl port-forward service/cockroachdb-public -n cockroach-operator-system 8080
+    kubectl port-forward service/cockroachdb-public 8080
     ```
 
-1. Go to <https://localhost:8080> and log in with the username and password you created earlier.
+1. Go to <http://localhost:8080>
 
 1. In the UI, verify that the cluster is running as expected:
 
@@ -372,7 +299,7 @@ To install NGINX Plus Ingress controller use this [official guide](https://docs.
 1. Create a LoadBalancer service
 
     ```bash
-    kubectl apply -f https://raw.githubusercontent.com/nginx/kubernetes-ingress/v5.2.0/deployments/service/loadbalancer.yaml
+    kubectl apply -f loadbalancer.yaml
     ```
 
 1. Expose NGINX Plus Dashboard for live monitoring
@@ -397,13 +324,19 @@ To install NGINX Plus Ingress controller use this [official guide](https://docs.
 
 ### Expose CockroachDB services
 
+1. Change directory to the `<project_working_dir>/cockroachdb`
+
+    ```bash
+    cd cockroachdb
+    ```
+
 1. Apply a self-signed cert
 
     ```bash
     kubectl apply -f cockroachdb-secret.yaml
     ```
 
-1. Apply the virtual server to create the FQDN
+1. Apply the virtual server to expose CockroachDB console outside of kubernetes
 
     ```bash
     kubectl apply -f cockroachdb-vs.yaml
@@ -421,6 +354,15 @@ To install NGINX Plus Ingress controller use this [official guide](https://docs.
     # Kind related
     172.18.5.10 dashboard.example.com cockroachdb.example.com
     ```
+
+1. Apply the transport server to expose CockroachDB sql outside of kubernetes. This task would require you to deploy two manifest files
+
+    ```bash
+    kubectl apply -f nginx-gc-configuration.yaml
+    kubectl apply -f cockroachdb-ts.yaml
+    ```
+
+
 
 ### [Optional] Cleanup
 

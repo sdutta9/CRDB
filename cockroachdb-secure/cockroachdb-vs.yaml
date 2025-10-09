@@ -2,6 +2,7 @@ apiVersion: k8s.nginx.org/v1
 kind: VirtualServer
 metadata:
   name: cockroachdb-vs
+  namespace: cockroach-operator-system 
 spec:
   host: cockroachdb.example.com 
   tls:
@@ -13,6 +14,8 @@ spec:
   - name: cockroachdb
     service: cockroachdb-public
     port: 8080
+    tls:
+      enable: true
     healthCheck:
       enable: true
       path: /_admin/v1/health

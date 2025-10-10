@@ -165,7 +165,7 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
 
 3. When you killed all of the nodes but one, what happened to the database? 
 
-    One of the key behaviour that I noticed is the cluster needs atleast 2 nodes to perform properly. If you try to decommission a node when only 2 nodes are live, it refuses to perform the action. If you forcefully do a hard node failure, the db stops functioning with a single node.
+    One of the key behaviour that I noticed is the cluster needs atleast 2 nodes to perform properly. If you try to decommission a node when only 2 nodes are live, it refuses to perform the action. If you forcefully do a hard node failure, the db stops functioning with a single node even though the pod is up.
 
 4. Did the platform behave differently than you would expect in any of the above scenarios?  If so please describe.
 

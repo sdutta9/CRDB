@@ -321,7 +321,6 @@ To install NGINX Plus Ingress controller use this [official guide](https://docs.
     172.18.5.10 dashboard.example.com
     ```
 
-
 ### Expose CockroachDB services
 
 1. Change directory to the `<project_working_dir>/cockroachdb`
@@ -333,13 +332,13 @@ To install NGINX Plus Ingress controller use this [official guide](https://docs.
 1. Apply a self-signed cert
 
     ```bash
-    kubectl apply -f cockroachdb-secret.yaml
+    kubectl apply -f ./nginx/cockroachdb-secret.yaml
     ```
 
 1. Apply the virtual server to expose CockroachDB console outside of kubernetes
 
     ```bash
-    kubectl apply -f cockroachdb-vs.yaml
+    kubectl apply -f ./nginx/cockroachdb-vs.yaml
     ```
 
 1. Add an entry in `/etc/hosts` file
@@ -358,8 +357,22 @@ To install NGINX Plus Ingress controller use this [official guide](https://docs.
 1. Apply the transport server to expose CockroachDB sql outside of kubernetes. This task would require you to deploy two manifest files
 
     ```bash
-    kubectl apply -f nginx-gc-configuration.yaml
-    kubectl apply -f cockroachdb-ts.yaml
+    kubectl apply -f ./nginx/nginx-gc-configuration.yaml
+    kubectl apply -f ./nginx/cockroachdb-ts.yaml
+    ```
+
+### Test running a query from your host machine outside of kubernetes
+
+1. To start the CockroachDB built-in client for executing SQL statement from an interactive shell run below command
+
+    ```bash
+    cockroach sql --host=cockroachdb.example.com:26257 --insecure --database=bank
+    ```
+
+1. Now run some sql command to validate you are able to work with the CockroachDB database running within K8s
+
+    ```sql
+    Select * from accounts;
     ```
 
 

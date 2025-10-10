@@ -12,6 +12,4 @@
 
 - ### [Execute a Code Example](./docs/4_execute_code_example.md)
 
-- ### [Present Your Findings](./docs/5_present_your_findings.md)
-
 - ### [Cleanup(Optional)](./docs/6_cleanup.md)

@@ -2,7 +2,7 @@
 
 As part of the exercise, you will first clone the git repo here
 
-1. Clone gitrepo. (This has been done within this repo so you can skip)
+1. Clone gitrepo.
 
     ```bash
     git clone https://github.com/cockroachlabs/hello-world-python-psycopg2
@@ -59,4 +59,4 @@ As part of the exercise, you will first clone the git repo here
 
 -------------
 
-Navigate to ([Task5](./5_present_your_findings.md) | [Main Page](../README.md))
+Navigate to ([Task5](./5_cleanup.md) | [Main Page](../README.md))

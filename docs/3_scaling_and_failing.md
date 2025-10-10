@@ -2,7 +2,7 @@
 
 As part of this exercise, you will scale up and scale down your CockroachDB cluster with an active load and observe the way it behaves.
 
-1. Update your CockroachDB cluster from 3 nodes to 4 nodes and watch for 5 minutes.
+1. Update your CockroachDB cluster from 3 nodes to 4 nodes and observe for 5 minutes.
 
     ```bash
     kubectl scale statefulset cockroachdb --replicas=4
@@ -13,9 +13,11 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
     statefulset.apps/cockroachdb scaled
     ```
 
-    {{TODO: Add screenshot for observation}}
+    You will observe that the number of `replicas` get balanced evenly among all the nodes within 5 minutes of the new node spawning up.
 
-1. Now gracefully remove a node from the cluster and see how the system behaves. 
+    ![node4 add](../img/ex3_node4_add.png)
+
+1. Now gracefully remove the newly added node from the cluster and observe for 5 minutes.
 
     For this task, first you will run below command to check the node status for your CockroachDB cluster.
 
@@ -89,12 +91,67 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
     statefulset.apps/cockroachdb scaled
     ```
 
-1. Now remove 1 node forcefully
+1. Now remove 1 node forcefully and observe for 5 minutes.
 
     ```bash
     kubectl scale sts cockroachdb --replicas=2
     ```
 
+    You will observe that the node which is deleted initially is marked as "Draining" and then it changes to "Suspect" status.
+
+    ![node2 suspect](../img/ex3_node2_suspect.png)
+
+    In around 5 minutes, as the node still remains down, CockroachDB changes the node status from "Suspect" to "Dead".
+
+    ![node2 dead](../img/ex3_node2_dead.png)
+
+1. Remove all nodes but one from the cluster.
+
+    1. For this step first try to remove all nodes except one gracefully.
+
+        ```bash
+        cockroach node decommission 3 --host=cockroachdb.example.com:26257 --insecure
+        ```
+
+        ```bash
+        ##Sample Output##
+
+        id | is_live | replicas | is_decommissioning | membership | is_draining |     readiness     | blocking_ranges
+        -----+---------+----------+--------------------+------------+-------------+-------------------+------------------
+        3 |  true   |       65 |       false        |   active   |    false    | allocation errors |              65
+        (1 row)
+
+        ranges blocking decommission detected
+        n3 has 65 replicas blocked with error: "0 of 1 live stores are able to take a new replica for the range (2 already have a voter, 0 already have a non-voter); likely not enough nodes in cluster"
+
+        ERROR: Cannot decommission nodes.
+        Failed running "node decommission"
+        ```
+
+        You will observe that you will not be allowed to decommission node3 as there are not enough nodes in the cluster to take on the replicas of node3.
+
+    1. Now try remove all nodes except 1 forcefully.
+
+        ```bash
+        kubectl scale sts cockroachdb --replicas=1
+        ```
+
+        You will notice that node3 status would briefly changes to "Draining" before the Database stops serving any queries. You can validate this from the load generation terminal too. You would see your load generation tool would have stopped with errors.
+
+        ![node3 drain](../img/ex3_node3_drain.png)
+
+        Load tool terminal output
+
+        ```bash
+        ...
+
+        2632.0s        0            0.0          594.8      0.0      0.0      0.0      0.0 transfer
+        2633.0s        0            0.0          594.6      0.0      0.0      0.0      0.0 transfer
+        E251010 15:34:40.957687 1 workload/cli/run.go:590  [-] 4  workload run error: pq: result is ambiguous: replica unavailable: (n1,s1):1 unable to serve request to r84:/Table/111/1/{600-700} [(n1,s1):1, (n3,s3):5, (n2,s2):3, next=6, gen=32, sticky=9223372036.854775807,2147483647]: lost quorum (down: (n3,s3):5,(n2,s2):3); closed timestamp: 1760110417.669200006,0 (2025-10-10 15:33:37); raft status: {"id":"1","term":9,"vote":"1","commit":529893,"lead":"0","leadEpoch":"0","raftState":"StateFollower","applied":529893,"progress":{},"leadtransferee":"0"}: have been waiting 60.50s for slow proposal ResolveIntent [/Table/111/1/666/0], ResolveIntent [/Table/111/1/679/0], ResolveIntent [/Table/111/1/613/0], [max_span_request_keys: 0], [target_bytes: 4194304]
+        E251010 15:34:40.957687 1 workload/cli/run.go:590  [-] 4 +(1) pq: result is ambiguous: replica unavailable: (n1,s1):1 unable to serve request to r84:/Table/111/1/{600-700} [(n1,s1):1, (n3,s3):5, (n2,s2):3, next=6, gen=32, sticky=9223372036.854775807,2147483647]: lost quorum (down: (n3,s3):5,(n2,s2):3); closed timestamp: 1760110417.669200006,0 (2025-10-10 15:33:37); raft status: {"id":"1","term":9,"vote":"1","commit":529893,"lead":"0","leadEpoch":"0","raftState":"StateFollower","applied":529893,"progress":{},"leadtransferee":"0"}: have been waiting 60.50s for slow proposal ResolveIntent [/Table/111/1/666/0], ResolveIntent [/Table/111/1/679/0], ResolveIntent [/Table/111/1/613/0], [max_span_request_keys: 0], [target_bytes: 4194304]
+        E251010 15:34:40.957687 1 workload/cli/run.go:590  [-] 4 +Error types: (1) *pq.Error
+        Error: pq: result is ambiguous: replica unavailable: (n1,s1):1 unable to serve request to r84:/Table/111/1/{600-700} [(n1,s1):1, (n3,s3):5, (n2,s2):3, next=6, gen=32, sticky=9223372036.854775807,2147483647]: lost quorum (down: (n3,s3):5,(n2,s2):3); closed timestamp: 1760110417.669200006,0 (2025-10-10 15:33:37); raft status: {"id":"1","term":9,"vote":"1","commit":529893,"lead":"0","leadEpoch":"0","raftState":"StateFollower","applied":529893,"progress":{},"leadtransferee":"0"}: have been waiting 60.50s for slow proposal ResolveIntent [/Table/111/1/666/0], ResolveIntent [/Table/111/1/679/0], ResolveIntent [/Table/111/1/613/0], [max_span_request_keys: 0], [target_bytes: 4194304]
+        ```
 
 -------------
 

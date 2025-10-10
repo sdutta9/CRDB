@@ -10,7 +10,7 @@ You will make use of `cockroach workload` command for this task. More info here.
 
     ```bash
     cockroach workload init bank \
-    'postgresql://root@cockroachdb.example.com:26257/bank?sslmode=disable'
+    'postgresql://root@cockroachdb.example.com:26257?sslmode=disable'
     ```
 
 1. Run the workload for 60 minutes to go through the next exercise

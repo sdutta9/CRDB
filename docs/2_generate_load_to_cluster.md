@@ -10,15 +10,16 @@ You will make use of `cockroach workload` command for this task. More info here.
 
     ```bash
     cockroach workload init bank \
-    'postgresql://root@cockroachdb.example.com:26257?sslmode=disable'
+    'postgresql://root@cockroachdb.example.com:26257/bank?sslmode=disable'
     ```
 
-1. Run the workload for 60 minutes
+1. Run the workload for 60 minutes to go through the next exercise
 
     ```bash
-    cockroach workload run bank \                                       
-    --duration=60m \                                                                 
+    cockroach workload run bank \
+    --duration=60m \
     'postgresql://root@cockroachdb.example.com:26257?sslmode=disable'
+    
     ```
 
 -------------

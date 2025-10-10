@@ -76,6 +76,8 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
     No more data reported on target nodes. Please verify cluster health before removing the nodes.
     ```
 
+    ![node4 decomm](../img/ex3_node4_decomm.png)
+
     Once Node 4 has been `Decommissioned`, you can now scale down your Statefulset to 3 nodes by running below command
 
     ```bash
@@ -86,7 +88,6 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
     ##Sample Output##
     statefulset.apps/cockroachdb scaled
     ```
-
 
 1. Now remove 1 node forcefully
 

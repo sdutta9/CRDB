@@ -2,21 +2,21 @@
 
 As part of this exercise, you will cover below task
 
-- Build a local 3 node Kubernetes cluster using KinD.
+- [Build a local 3 node Kubernetes cluster using KinD](#build-a-local-3-node-kubernetes-cluster-using-kind)
 
-- Deploy 3 node CockroachDB cluster running within Kubernetes
+- [Deploy 3 node CockroachDB cluster running within Kubernetes](#deploy-3-node-cockroachdb-cluster-running-within-kubernetes)
 
-- Use built-in SQL client using a temporary interactive pod to test CockroachDB cluster
+- [Use built-in SQL client using a temporary interactive pod to test CockroachDB cluster](#use-built-in-sql-client-using-a-temporary-interactive-pod-to-test-cockroachdb-cluster)
 
-- Access CockroachDB Web console
+- [Access CockroachDB Web console](#access-cockroachdb-web-console)
 
-- Setup NGINX Ingress Controller as load balancer to expose CockroachDB outside of Kubernetes
+- [Setup NGINX Ingress Controller as load balancer to expose CockroachDB outside of Kubernetes](#setup-nginx-ingress-controller-as-load-balancer-to-expose-cockroachdb-outside-of-kubernetes)
 
-- Expose CockroachDB service using NGINX
+- [Expose CockroachDB service using NGINX](#expose-cockroachdb-service-using-nginx)
 
-- Test running a query from your host machine outside of kubernetes
+- [Test running a query from your host machine outside of kubernetes](#test-running-a-query-from-your-host-machine-outside-of-kubernetes)
 
-
+</br>
 
 ## Build a local 3 node Kubernetes cluster using KinD
 
@@ -87,20 +87,6 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
     statefulset.apps/cockroachdb created
     ```
 
-1. Confirm that three pods are Running successfully
-
-    ```bash
-    kubectl get pods
-    ```
-
-    ```bash
-    ##Sample Output##
-    NAME            READY   STATUS    RESTARTS   AGE
-    cockroachdb-0   1/1     Running   0          2m12s
-    cockroachdb-1   1/1     Running   0          2m12s
-    cockroachdb-2   1/1     Running   0          2m12s
-    ```
-
 1. Confirm that the persistent volumes and corresponding claims were created successfully for all three pods:
 
     ```bash
@@ -115,7 +101,23 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
     pvc-c4471569-0938-464d-9008-2733a20da1b1   20Gi       RWO            Delete           Bound    default/datadir-cockroachdb-1   standard       <unset>                          37h
     ```
 
-1. Use `cluster-init.yaml` file to perform a one-time initialization that joins the CockroachDB nodes into a single cluster:
+1. Confirm that three pods are Running successfully
+
+    ```bash
+    kubectl get pods
+    ```
+
+    ```bash
+    ##Sample Output##
+    NAME            READY   STATUS    RESTARTS   AGE
+    cockroachdb-0   0/1     Running   0          2m12s
+    cockroachdb-1   0/1     Running   0          2m12s
+    cockroachdb-2   0/1     Running   0          2m12s
+    ```
+
+    Initially the container within the pod would not be in ready state. This is because the all the cockroach nodes have not been joined into a cluster. This is accomplished by running `cockroach init` command which you are going to do in the next step.
+
+1. Use `cluster-init.yaml` file to perform a one-time initialization by running `cockroach init` command that joins the CockroachDB nodes into a single cluster:
 
     ```bash
     curl -O https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cluster-init.yaml
@@ -128,6 +130,21 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
     ```bash
     ##Sample Output##
     job.batch/cluster-init created
+    ```
+
+1. After running the `cockroach init` command check back on your cockroachDB pods. Now you will notice all your cockroachDB pods have their containers in ready state.
+
+    ```bash
+    kubectl get pods
+    ```
+
+    ```bash
+    ##Sample Output##
+    NAME                 READY   STATUS      RESTARTS   AGE
+    cluster-init-2rdx9   0/1     Completed   0          87s
+    cockroachdb-0        1/1     Running     0          6m12s
+    cockroachdb-1        1/1     Running     0          6m12s
+    cockroachdb-2        1/1     Running     0          6m12s
     ```
 
 ## Use built-in SQL client using a temporary interactive pod to test CockroachDB cluster
@@ -157,9 +174,14 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
     ```sql
     CREATE DATABASE bank;
 
-    CREATE TABLE bank.accounts (id INT PRIMARY KEY, balance DECIMAL);
+    CREATE TABLE bank.accounts (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        balance DECIMAL
+    );
 
-    INSERT INTO bank.accounts VALUES (1, 1000.50);
+    INSERT INTO bank.accounts (balance)
+    VALUES
+        (1000.50), (20000), (380), (500), (55000);
 
     SELECT * FROM bank.accounts;
     ```
@@ -205,6 +227,12 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
     \q
     ```
 
+    ```bash
+    ##Sample Output##
+    root@cockroachdb-public:26257/defaultdb> \q                                                                      
+    pod "cockroachdb" deleted
+    ```
+
 ## Access CockroachDB Web console
 
 1. In a new terminal window, port-forward from your local machine to the `cockroachdb-public` service:
@@ -218,7 +246,12 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
 1. In the UI, verify that the cluster is running as expected:
 
     - View the Node List to ensure that all nodes successfully joined the cluster.
+
+        ![ui node](../img/ex1_ui_nodes.png)
+
     - Click the Databases tab on the left to verify that bank is listed.
+
+        ![ui databases](../img/ex1_ui_databases.png)
 
 ## Setup NGINX Ingress Controller as load balancer to expose CockroachDB outside of Kubernetes
 

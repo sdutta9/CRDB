@@ -153,6 +153,23 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
         Error: pq: result is ambiguous: replica unavailable: (n1,s1):1 unable to serve request to r84:/Table/111/1/{600-700} [(n1,s1):1, (n3,s3):5, (n2,s2):3, next=6, gen=32, sticky=9223372036.854775807,2147483647]: lost quorum (down: (n3,s3):5,(n2,s2):3); closed timestamp: 1760110417.669200006,0 (2025-10-10 15:33:37); raft status: {"id":"1","term":9,"vote":"1","commit":529893,"lead":"0","leadEpoch":"0","raftState":"StateFollower","applied":529893,"progress":{},"leadtransferee":"0"}: have been waiting 60.50s for slow proposal ResolveIntent [/Table/111/1/666/0], ResolveIntent [/Table/111/1/679/0], ResolveIntent [/Table/111/1/613/0], [max_span_request_keys: 0], [target_bytes: 4194304]
         ```
 
+## Questions to answer:
+
+1. As you were adding and removing nodes from the cluster, how did that impact performance?  What kinds of metrics were you tracking to identify that impact?
+
+    The key thing that you will observe is as the 4th node gets added, CockroachDB automatically began rebalancing and evenly distributing replicas.
+
+2. What other kinds of behaviour did you witness as you were changing the cluster topology?  How did the system handle the hard node failure differently than the graceful shutdown?
+
+    With graceful shutdown, the node drains its replicas and connections before decommissioning where as with hard node failure the db marks the node as suspect hoping it would retun back to normal state within a set duration and if it doesn't then marks it dead. The replicas donot get drained in this scenario.
+
+3. When you killed all of the nodes but one, what happened to the database? 
+
+    One of the key behaviour that I noticed is the cluster needs atleast 2 nodes to perform properly. If you try to decommission a node when only 2 nodes are live, it refuses to perform the action. If you forcefully do a hard node failure, the db stops functioning with a single node.
+
+4. Did the platform behave differently than you would expect in any of the above scenarios?  If so please describe.
+
+    WIP
 -------------
 
 Navigate to ([Task4](./4_execute_code_example.md) | [Main Page](../README.md))

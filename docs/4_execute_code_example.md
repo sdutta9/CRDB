@@ -57,6 +57,12 @@ As part of the exercise, you will first clone the git repo here
     python example.py
     ```
 
+1. To stop python virtual environment run below command
+
+    ```bash
+    deactivate
+    ```
+
 -------------
 
 Navigate to ([Task5](./5_cleanup.md) | [Main Page](../README.md))

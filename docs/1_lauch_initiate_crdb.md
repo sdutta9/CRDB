@@ -80,6 +80,7 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
 
     ```bash
     ##Sample Output##
+
     service/cockroachdb-public created
     Warning: spec.SessionAffinity is ignored for headless services
     service/cockroachdb created
@@ -95,6 +96,7 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
 
     ```bash
     ##Sample Output##
+
     NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                           STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
     pvc-055bff24-c965-47b0-aeb0-b7a44a271d09   20Gi       RWO            Delete           Bound    default/datadir-cockroachdb-2   standard       <unset>                          37h
     pvc-998d8a5c-dfdb-488c-a68f-8bc5974fe7da   20Gi       RWO            Delete           Bound    default/datadir-cockroachdb-0   standard       <unset>                          37h
@@ -109,6 +111,7 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
 
     ```bash
     ##Sample Output##
+
     NAME            READY   STATUS    RESTARTS   AGE
     cockroachdb-0   0/1     Running   0          2m12s
     cockroachdb-1   0/1     Running   0          2m12s
@@ -129,6 +132,7 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
 
     ```bash
     ##Sample Output##
+
     job.batch/cluster-init created
     ```
 
@@ -140,6 +144,7 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
 
     ```bash
     ##Sample Output##
+
     NAME                 READY   STATUS      RESTARTS   AGE
     cluster-init-2rdx9   0/1     Completed   0          87s
     cockroachdb-0        1/1     Running     0          6m12s
@@ -187,7 +192,8 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
     ```
 
     ```bash
-    ##Sample Output##
+    ##Sample Outputs##
+
     root@cockroachdb-public:26257/defaultdb>  CREATE DATABASE bank;
     CREATE DATABASE
 
@@ -229,6 +235,7 @@ Follow below guide (<https://www.cockroachlabs.com/docs/v25.3/orchestrate-a-loca
 
     ```bash
     ##Sample Output##
+
     root@cockroachdb-public:26257/defaultdb> \q                                                                      
     pod "cockroachdb" deleted
     ```
@@ -277,6 +284,7 @@ To install NGINX Plus Ingress controller use this [official guide](https://docs.
 
     ```bash
     ##Sample Output##
+
     namespace/nginx-ingress created
     serviceaccount/nginx-ingress created
     clusterrole.rbac.authorization.k8s.io/nginx-ingress created
@@ -317,6 +325,7 @@ To install NGINX Plus Ingress controller use this [official guide](https://docs.
 
     ```bash
     ##Sample Output##
+    
     ingressclass.networking.k8s.io/nginx created
     deployment.apps/nginx-ingress created
     ```

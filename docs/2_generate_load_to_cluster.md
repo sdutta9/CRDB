@@ -27,10 +27,16 @@ You will make use of `cockroach workload` command for this task. More info here.
 
 If you don't have access to the `cockroach workload` command or want a simpler Python-based approach, you can use the custom load generator:
 
-1. Activate Python virtual environment:
+1. Change directory to the `<project_working_dir>/custom_loadgen`
 
     ```bash
     cd custom_loadgen
+    ```
+
+1. Create a python virtual environment and then activate it.
+
+    ```bash
+    python3 -m venv path/to/venv
     source path/to/venv/bin/activate
     ```
 

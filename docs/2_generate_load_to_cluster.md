@@ -40,6 +40,12 @@ If you don't have access to the `cockroach workload` command or want a simpler P
     source path/to/venv/bin/activate
     ```
 
+1. Within the virtual environment install `psycopg2-binary` using below command
+
+    ```bash
+    pip install psycopg2-binary
+    ```
+
 1. Initialize the bank schema:
 
     ```bash
@@ -72,6 +78,7 @@ If you don't have access to the `cockroach workload` command or want a simpler P
 
     ```bash
     ##Sample Output##
+
     🚀 Starting Bank workload...
     Duration: 300s, Workers: 3
     ==================================================

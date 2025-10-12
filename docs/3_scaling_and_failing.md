@@ -26,6 +26,8 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
     ```
 
     ```bash
+     ##Sample Output##
+     
        id |                          address                          |                        sql_address                        |  build  |              started_at              |              updated_at              | locality | attrs | is_available | is_live
      -----+-----------------------------------------------------------+-----------------------------------------------------------+---------+--------------------------------------+--------------------------------------+----------+-------+--------------+----------
         1 | cockroachdb-0.cockroachdb.default.svc.cluster.local:26257 | cockroachdb-0.cockroachdb.default.svc.cluster.local:26257 | v25.3.2 | 2025-10-10 03:03:45.372156 +0000 UTC | 2025-10-10 03:57:45.357952 +0000 UTC |          | []    | true         | true
@@ -88,6 +90,7 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
 
     ```bash
     ##Sample Output##
+
     statefulset.apps/cockroachdb scaled
     ```
 
@@ -143,6 +146,8 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
         Load tool terminal output
 
         ```bash
+         ##Sample Output##
+
         ...
 
         2632.0s        0            0.0          594.8      0.0      0.0      0.0      0.0 transfer

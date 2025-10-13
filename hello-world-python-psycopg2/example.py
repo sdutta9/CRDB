@@ -154,6 +154,7 @@ def main():
 
     print_balances(conn)
 
+    # Delete all rows from the accounts table to clean up.
     delete_accounts(conn)
 
     # Close communication with the database.

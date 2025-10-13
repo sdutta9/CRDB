@@ -27,13 +27,13 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
 
     ```bash
      ##Sample Output##
-     
+
        id |                          address                          |                        sql_address                        |  build  |              started_at              |              updated_at              | locality | attrs | is_available | is_live
      -----+-----------------------------------------------------------+-----------------------------------------------------------+---------+--------------------------------------+--------------------------------------+----------+-------+--------------+----------
         1 | cockroachdb-0.cockroachdb.default.svc.cluster.local:26257 | cockroachdb-0.cockroachdb.default.svc.cluster.local:26257 | v25.3.2 | 2025-10-10 03:03:45.372156 +0000 UTC | 2025-10-10 03:57:45.357952 +0000 UTC |          | []    | true         | true
         2 | cockroachdb-2.cockroachdb.default.svc.cluster.local:26257 | cockroachdb-2.cockroachdb.default.svc.cluster.local:26257 | v25.3.2 | 2025-10-10 03:36:33.870979 +0000 UTC | 2025-10-10 03:57:45.956039 +0000 UTC |          | []    | true         | true
         3 | cockroachdb-1.cockroachdb.default.svc.cluster.local:26257 | cockroachdb-1.cockroachdb.default.svc.cluster.local:26257 | v25.3.2 | 2025-10-10 03:36:33.604466 +0000 UTC | 2025-10-10 03:57:45.686746 +0000 UTC |          | []    | true         | true
-        4 | cockroachdb-3.cockroachdb.default.svc.cluster.local:26257 | cockroachdb-3.cockroachdb.default.svc.cluster.local:26257 | v25.3.2 | 2025-10-10 03:24:39.978172 +0000 UTC | 2025-10-10 03:27:14.668713 +0000 UTC |          | []    | false        | false
+        4 | cockroachdb-3.cockroachdb.default.svc.cluster.local:26257 | cockroachdb-3.cockroachdb.default.svc.cluster.local:26257 | v25.3.2 | 2025-10-10 03:24:39.978172 +0000 UTC | 2025-10-10 03:27:14.668713 +0000 UTC |          | []    | true         | true
     (4 rows)
     ```
 

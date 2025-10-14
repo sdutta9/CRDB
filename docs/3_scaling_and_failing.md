@@ -166,15 +166,16 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
 
 2. What other kinds of behaviour did you witness as you were changing the cluster topology?  How did the system handle the hard node failure differently than the graceful shutdown?
 
-    With graceful shutdown, the node drains its replicas and connections before decommissioning where as with hard node failure the db marks the node as suspect hoping it would retun back to normal state within a set duration and if it doesn't then marks it dead. The replicas donot get drained in this scenario.
+    With graceful shutdown, the node drains its replicas and connections before decommissioning where as with hard node failure the db marks the node as suspect hoping it would return back to normal state within a set duration (observed 5 mins) and if it doesn't then marks it dead. The replicas donot get drained in this scenario.
 
-3. When you killed all of the nodes but one, what happened to the database? 
+3. When you killed all of the nodes but one, what happened to the database?
 
     One of the key behaviour that I noticed is the cluster needs atleast 2 nodes to perform properly. If you try to decommission a node when only 2 nodes are live, it refuses to perform the action. If you forcefully do a hard node failure, the db stops functioning with a single node even though the pod is up.
 
 4. Did the platform behave differently than you would expect in any of the above scenarios?  If so please describe.
 
-    WIP
+    I was expecting the latency would increase significantly as a new node spins up as the ranges needs to get replicated to the new node. But it was not the case. Another thing that I understood is it needs a minimum of 3 nodes to function as per the ideal expectation.
+
 -------------
 
 Navigate to ([Task4](./4_execute_code_example.md) | [Main Page](../README.md))

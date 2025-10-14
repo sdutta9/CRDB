@@ -101,9 +101,6 @@ For a more comprehensive demonstration with advanced CockroachDB features, you c
     Total Balance: $17,766.42
     Average Balance: $3,553.28
 
-    🔍 Account Search Results (savings accounts):
-    ACC9342102: Alice Johnson - $3362.94
-
     📋 Recent Transactions for Account 98cde87c-a56d-4715-9c4a-d2d94e98cbbc:
     Outgoing: $250.00 - Demo transfer
     Incoming: $347.63 - Bulk deposit of $347.63223024849304

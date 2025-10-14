@@ -322,43 +322,6 @@ class CockroachDBManager:
             'top_accounts': [dict(row) for row in top_accounts]
         }
 
-    def search_accounts(self, search_term: str = None, account_type: str = None, 
-                       min_balance: Decimal = None, max_balance: Decimal = None) -> List[Dict]:
-        """Search accounts with various filters using full-text search."""
-        conditions = ["is_active = TRUE"]
-        params = []
-        
-        if search_term:
-            conditions.append("(owner_name ILIKE %s OR account_number ILIKE %s)")
-            params.extend([f"%{search_term}%", f"%{search_term}%"])
-        
-        if account_type:
-            conditions.append("account_type = %s")
-            params.append(account_type)
-        
-        if min_balance is not None:
-            conditions.append("balance >= %s")
-            params.append(min_balance)
-        
-        if max_balance is not None:
-            conditions.append("balance <= %s")
-            params.append(max_balance)
-        
-        where_clause = " AND ".join(conditions)
-        
-        with self.get_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(f"""
-                    SELECT 
-                        id, account_number, owner_name, account_type, balance, 
-                        created_at, updated_at
-                    FROM accounts 
-                    WHERE {where_clause}
-                    ORDER BY balance DESC
-                """, params)
-                
-                return [dict(row) for row in cur.fetchall()]
-
     def get_transaction_history(self, account_id: uuid.UUID, limit: int = 50) -> List[Dict]:
         """Get detailed transaction history for an account."""
         with self.get_connection() as conn:
@@ -390,16 +353,6 @@ class CockroachDBManager:
                 
                 return [dict(row) for row in cur.fetchall()]
 
-    def backup_data(self, backup_path: str):
-        """Create a data backup using EXPORT."""
-        with self.get_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(f"""
-                    EXPORT INTO CSV 's3://your-bucket/backup/{backup_path}/' 
-                    FROM TABLE accounts, transactions
-                """)
-                logging.info(f"✓ Data exported to {backup_path}")
-
     def run_transaction(self, conn, operation, max_retries: int = 3):
         """Enhanced transaction runner with exponential backoff."""
         for retry in range(1, max_retries + 1):
@@ -416,22 +369,6 @@ class CockroachDBManager:
             except psycopg2.Error as e:
                 logging.error(f"Database error: {e}")
                 raise
-
-    def cleanup_old_transactions(self, days_old: int = 90):
-        """Archive old transactions (example of data lifecycle management)."""
-        cutoff_date = datetime.now() - timedelta(days=days_old)
-        
-        with self.get_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    DELETE FROM transactions 
-                    WHERE created_at < %s AND status = 'completed'
-                """, (cutoff_date,))
-                
-                deleted_count = cur.rowcount
-                conn.commit()
-                
-                logging.info(f"✓ Cleaned up {deleted_count} old transactions")
 
 def  demonstrate_advanced_features():
     """Demonstrate the enhanced database functionality."""
@@ -469,12 +406,6 @@ def  demonstrate_advanced_features():
         print(f"Total Accounts: {stats['total_accounts']}")
         print(f"Total Balance: ${stats['total_balance']:,.2f}")
         print(f"Average Balance: ${stats['avg_balance']:,.2f}")
-        
-        # Show account search
-        print("\n🔍 Account Search Results (savings accounts):")
-        savings_accounts = db_manager.search_accounts(account_type='savings')
-        for acc in savings_accounts[:3]:
-            print(f"  {acc['account_number']}: {acc['owner_name']} - ${acc['balance']}")
         
         # Show transaction history
         if account_ids:

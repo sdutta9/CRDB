@@ -12,4 +12,4 @@
 
 - ### [Execute a Code Example](./docs/4_execute_code_example.md)
 
-- ### [Cleanup(Optional)](./docs/6_cleanup.md)
+- ### [Cleanup(Optional)](./docs/5_cleanup.md)

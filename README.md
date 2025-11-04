@@ -1,8 +1,8 @@
 ![cockroachdb Banner](./img/cockroach_labs_banner.png)
 
-# Cockroach Labs Field Technical Exercise
+# Cockroach DB Demo
 
-## Core Exercise
+## Core Topics
 
 - ### [Launch and Initialize CRDB](./docs/1_lauch_initiate_crdb.md)
   

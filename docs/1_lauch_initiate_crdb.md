@@ -301,7 +301,7 @@ To install NGINX Plus Ingress controller use this [official guide](https://docs.
     customresourcedefinition.apiextensions.k8s.io/virtualservers.k8s.nginx.org created
     ```
 
-1. Export NGINX Plus jwt token into an environment variable
+1. Export NGINX Plus jwt token into an environment variable. You can request for a free NGINX Plus trial license from [here](https://www.f5.com/trials/nginx-one).
 
     ```bash
     export jwt_token=$(cat nginx-repo.jwt)

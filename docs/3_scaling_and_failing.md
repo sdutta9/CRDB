@@ -1,6 +1,6 @@
 # Scaling and Failing
 
-As part of this exercise, you will scale up and scale down your CockroachDB cluster with an active load and observe the way it behaves.
+As part of this section, you will scale up and scale down your CockroachDB cluster with an active load and observe the way it behaves.
 
 1. Update your CockroachDB cluster from 3 nodes to 4 nodes and observe for 5 minutes.
 

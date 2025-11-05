@@ -1,6 +1,6 @@
 # Generate a load against the cluster
 
-As part of this exercise, you will generate a load against the CockroachDB cluster that you created in previous exercise.
+As part of this section, you will generate a load against the CockroachDB cluster that you created in previous section.
 
 You have two options for generating load:
 
@@ -15,7 +15,7 @@ You will make use of `cockroach workload` command for this task. More info here.
     'postgresql://root@cockroachdb.example.com:26257?sslmode=disable'
     ```
 
-2. Run the workload for 60 minutes to go through the next exercise
+2. Run the workload for 60 minutes to go through the next section
 
     ```bash
     cockroach workload run bank \

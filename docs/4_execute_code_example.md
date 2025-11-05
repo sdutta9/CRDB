@@ -1,6 +1,6 @@
 # Executing a Code Example
 
-As part of the exercise, you will first clone the git repo here
+As part of the section, you will first clone the git repo here
 
 1. Clone gitrepo.
 

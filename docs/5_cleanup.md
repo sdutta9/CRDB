@@ -1,4 +1,4 @@
-# Cleanup your Cockroach Labs Field Technical Exercise Environment
+# Cleanup your Cockroach Labs Demo Environment
 
 1. Delete the entire KinD cluster by running below command
 

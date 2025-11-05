@@ -1,6 +1,6 @@
 # Launch and Initialize CRDB
 
-As part of this exercise, you will cover below task
+As part of this section, you will cover below task
 
 - [Build a local 3 node Kubernetes cluster using KinD](#build-a-local-3-node-kubernetes-cluster-using-kind)
 

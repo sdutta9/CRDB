@@ -158,7 +158,7 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
         Error: pq: result is ambiguous: replica unavailable: (n1,s1):1 unable to serve request to r84:/Table/111/1/{600-700} [(n1,s1):1, (n3,s3):5, (n2,s2):3, next=6, gen=32, sticky=9223372036.854775807,2147483647]: lost quorum (down: (n3,s3):5,(n2,s2):3); closed timestamp: 1760110417.669200006,0 (2025-10-10 15:33:37); raft status: {"id":"1","term":9,"vote":"1","commit":529893,"lead":"0","leadEpoch":"0","raftState":"StateFollower","applied":529893,"progress":{},"leadtransferee":"0"}: have been waiting 60.50s for slow proposal ResolveIntent [/Table/111/1/666/0], ResolveIntent [/Table/111/1/679/0], ResolveIntent [/Table/111/1/613/0], [max_span_request_keys: 0], [target_bytes: 4194304]
         ```
 
-## Questions to answer:
+## Key Observations:
 
 1. As you were adding and removing nodes from the cluster, how did that impact performance?  What kinds of metrics were you tracking to identify that impact?
 

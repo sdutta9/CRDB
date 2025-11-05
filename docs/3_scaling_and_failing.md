@@ -166,7 +166,7 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
 
 2. What other kinds of behaviour did you witness as you were changing the cluster topology?  How did the system handle the hard node failure differently than the graceful shutdown?
 
-    With graceful shutdown, the node drains its replicas and connections before decommissioning where as with hard node failure the db marks the node as suspect hoping it would return back to normal state within a set duration (observed 5 mins) and if it doesn't then marks it dead. The replicas donot get drained in this scenario.
+    With graceful shutdown, the node drains its replicas and connections before decommissioning where as with hard node failure the db marks the node as suspect hoping it would return back to normal state within a set duration (observed 5 mins) and if it doesn't then marks it dead. The replicas do not get drained in this scenario.
 
 3. When you killed all of the nodes but one, what happened to the database?
 
@@ -174,7 +174,7 @@ As part of this exercise, you will scale up and scale down your CockroachDB clus
 
 4. Did the platform behave differently than you would expect in any of the above scenarios?  If so please describe.
 
-    I was expecting the latency would increase significantly as a new node spins up as the ranges needs to get replicated to the new node. But it was not the case. Another thing that I understood is it needs a minimum of 3 nodes to function as per the ideal expectation.
+    You may have expected the latency to have increased significantly as a new node spins up as the ranges needs to get replicated to the new node. But based on the observation, it was not the case. Another thing that you may have noticed is cockroachDB needs a minimum of 3 nodes to function as per the ideal expectation.
 
 -------------
 
